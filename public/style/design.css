@@ -1,0 +1,96 @@
+body {
+	background: linear-gradient(180deg, rgba(79,131,255,1) 40%, rgba(35,207,255,1) 100%);
+	background-repeat:no-repeat;
+	background-attachment:fixed;
+	font-family: 'Roboto';
+}
+
+#logoBtn {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: white;
+	border: none;
+	width: 128px;
+	height: 128px;
+	border-radius: 64px;
+	text-align: center;
+}
+
+#infoBtn {
+	position: fixed;
+	top: 8px;
+	left: calc(50% + 192px);
+	background-color: rgba(79,131,255,1);
+	border: 2px white solid;
+	width: 32px;
+	height: 32px;
+	border-radius: 16px;
+	font-size: 16px;
+	color: white;
+	font-weight: 700;
+}
+
+#logoImg {
+	width: 112px;
+	height: 112px;
+}
+
+#payForm {
+	display: none;
+}
+
+#logonInput, #logonBtn, #toInput, #amountInput, #payBtn {
+	display: block;
+	margin: auto;
+	margin-top: 96px;
+	border: none;
+	width: 448px;
+	height: 64px;
+	text-align: center;
+	font-size: 32px;
+	padding: 16px;
+}
+
+#logonInput:focus::placeholder, #toInput:focus::placeholder, #amountInput:focus::placeholder {
+	color: transparent;
+}
+
+#logonBtn, #payBtn {
+	margin-top: 16px;
+	background-color: #FFC023;
+}
+
+#logonBtn:hover, #payBtn:hover {
+	cursor: pointer;
+}
+
+#amountInput {
+	margin-top: 16px;
+}
+
+#modal {
+	display: none;
+	z-index: 9000;
+	width: 100%;
+	height: 100%;
+	font-size: 16px;
+	position: fixed;
+	left: 0;
+	top: 0;
+	background-color: rgba(0,0,0,0.6);
+}
+
+#alert, #alertHeader {
+	width: 416px;
+	padding: 16px;
+	background-color: white;
+	margin: auto;
+	margin-top: 224px;
+	white-space: pre-line;
+}
+
+#alert {
+	margin-top: 0px;
+	min-height: 128px;
+}

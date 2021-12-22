@@ -1,0 +1,16 @@
+{
+  "name": "zingzap-ts",
+  "version": "1.0.0",
+  "description": "Secure transactions in an instant, anytime, anywhere.",
+  "main": "zingzap.js",
+  "scripts": {
+    "start": "node zingzap",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.2"
+  }
+}

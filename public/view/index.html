@@ -1,0 +1,32 @@
+<html>
+	<head>
+		<title>ZingZap</title>
+		<link rel="stylesheet" href="../style/design.css">
+		<link rel="shortcut icon" type="image/x-icon" href="../img/favicon.ico" />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet"> 
+	</head>
+	<body>
+		<button id="logoBtn"><img id="logoImg" src="../img/favicon.png"></button>
+		<button id="infoBtn">?</button>
+		<form id="logonForm" autocomplete="on">
+			<input id="logonInput" type="password" name="password" placeholder="Password..." autocomplete="current-password">
+			<input id="logonBtn" type="submit" value="Logon / Register">
+		</form>
+		<div id="payForm">
+			<input id="toInput" placeholder="Address of payee...">
+			<input id="amountInput" placeholder="Amount to be paid...">
+			<input id="payBtn" type="button" value="Pay">
+		</div>
+
+		<div id="modal">
+			<div id="alertHeader"></div>
+			<div id="alert">
+				<p id="alertMsg"></p>
+			</div>
+		</div>
+		
+		<script src="../src/index.js" defer></script>
+	</body>
+</html>
