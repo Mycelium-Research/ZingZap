@@ -42,6 +42,6 @@ app.get('/zingzap', (req, res) => {
 	res.send({ zingzap: zingzap })
 });
 
-app.listen(80, () => {
-	console.log('ZingZap is running on port 80.\r\n')
+app.listen(process.env.PORT, () => {
+	console.log(`ZingZap is running on port ${process.env.PORT}.\r\n`)
 });
