@@ -68,10 +68,10 @@ module.exports = class Pulse {
 		return "Volt has been added successfully."
 	}
 	
-	numVolts = address => {
+	accountInfo = address => {
 		for (let j = 0; j < this.station[address.charCodeAt(0)].length; j++) {
 			if (this.station[address.charCodeAt(0)][j].address === address) {
-				return this.station[address.charCodeAt(0)][j].numVolts;
+				return [this.station[address.charCodeAt(0)][j].numVolts, this.station[address.charCodeAt(0)][j].usd];
 			}
 		}
 	}

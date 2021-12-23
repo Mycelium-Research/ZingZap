@@ -1,5 +1,6 @@
 let address = '';
 let password = '';
+let amount = 0;
 let numVolts = 0;
 
 const windowAlert = (msg, error = false) => {
@@ -18,21 +19,28 @@ window.onclick = function (event) {
 	}
 }
 
+document.getElementById("closeModal").addEventListener("click", () => {
+	document.getElementById("modal").style.display = "none";
+});
+
 // TODO: add 'info' button for copying address and password, and 'history' button for checking the history of the last 16 blocks.
 
-// TODO: add a way to onboard from USDC to ZingZap.
+document.getElementById("infoBtn").addEventListener("click", () => {
+	windowAlert(`Address: ${address}\r\nPassword: ${password}\r\nBalance: $${amount} USD`)
+})
 
-// TODO: copy password and address to clipboard.
+// TODO: add a way to onboard from USDC to ZingZap.
 
 const getNumVolts = address => {
 	fetch(`${window.location.href}conductor?address=${encodeURIComponent(address)}`)
 		.then(result => result.json())
 		.then(result => {
 			numVolts = result.numVolts;
+			amount = result.amount;
 			if (!result.statusMsg) {
 				return;
 			}
-			windowAlert(result.statusMsg);
+			windowAlert("You can now logon using the 'Logon' button. Once logged in, click the '!' button in the top-right-hand corner to copy your address and password.");
 		})
 		.catch(error => windowAlert(error, true))
 }
@@ -61,7 +69,6 @@ const logon = () => {
 				let output = '';
 				for (let i = 0; i < hashing.byteLength; i++) output += String.fromCharCode(hashing[i]);
 				document.getElementById("logonInput").value = window.btoa(output);
-				window.prompt("CTRL + C to copy your password, then ENTER to close window.", `${document.getElementById("logonInput").value}`);
 				genAddress(res.maxVolts, true);
 			})
 			.catch(err => windowAlert(err, true))
@@ -74,7 +81,8 @@ const logon = () => {
 				document.getElementById("logonForm").style.display = 'none';
 				document.getElementById("payForm").style.display = 'block';
 				document.getElementById("logonInput").value = '';
-				document.getElementById("infoBtn").textContent = '!';
+				document.getElementById("historyBtn").style.display = 'none';
+				document.getElementById("infoBtn").style.display = 'block';
 			})
 			.catch(err => windowAlert(err, true))
 	}

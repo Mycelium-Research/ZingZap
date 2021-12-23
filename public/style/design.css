@@ -3,6 +3,7 @@ body {
 	background-repeat:no-repeat;
 	background-attachment:fixed;
 	font-family: 'Roboto';
+	-webkit-appearance: none;
 }
 
 #logoBtn {
@@ -13,11 +14,11 @@ body {
 	border: none;
 	width: 128px;
 	height: 128px;
-	border-radius: 64px;
+	border-radius: 128px;
 	text-align: center;
 }
 
-#infoBtn {
+#historyBtn, #infoBtn {
 	position: fixed;
 	top: 8px;
 	left: calc(50% + 192px);
@@ -25,10 +26,14 @@ body {
 	border: 2px white solid;
 	width: 32px;
 	height: 32px;
-	border-radius: 16px;
+	border-radius: 32px;
 	font-size: 16px;
 	color: white;
 	font-weight: 700;
+}
+
+#infoBtn {
+	display: none;
 }
 
 #logoImg {
@@ -50,6 +55,7 @@ body {
 	text-align: center;
 	font-size: 32px;
 	padding: 16px;
+	border-radius: 0;
 }
 
 #logonInput:focus::placeholder, #toInput:focus::placeholder, #amountInput:focus::placeholder {
@@ -61,7 +67,7 @@ body {
 	background-color: #FFC023;
 }
 
-#logonBtn:hover, #payBtn:hover {
+#logonBtn:hover, #payBtn:hover, #infoBtn:hover, #historyBtn:hover {
 	cursor: pointer;
 }
 
@@ -90,7 +96,26 @@ body {
 	white-space: pre-line;
 }
 
+#alertHeader {
+	height: 24px;
+}
+
 #alert {
 	margin-top: 0px;
 	min-height: 128px;
+}
+
+#closeModal {
+	float: right;
+	font-weight: 700;
+	color: white;
+	font-size: 24px;
+}
+
+#closeModal:hover {
+	cursor: pointer;
+}
+
+#toInput:disabled {
+	cursor: not-allowed;
 }

@@ -10,6 +10,7 @@ const Volt = require('./obj/volt.js');
 const MAX_VOLTS_CONDUCTOR = 16384;
 
 let zingzap = new Pulse();
+zingzap.addConductor('G3tKJ/DWlLXVWEoR/dQYRwsS+1OvjR1AWKzESbyg5AE=');
 
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '/public/view/index.html'));
@@ -26,7 +27,8 @@ app.get('/conductor', (req, res) => {
 	console.log(`Conductor ${req.query.address} has been registered or logged in.\r\n`);
 	res.send({ 
 		statusMsg: zingzap.addConductor(decodeURIComponent(req.query.address)), 
-		numVolts: zingzap.numVolts(req.query.address) 
+		numVolts: zingzap.accountInfo(req.query.address)[0],
+		amount: zingzap.accountInfo(req.query.address)[1]
 	});
 });
 
@@ -42,6 +44,6 @@ app.get('/zingzap', (req, res) => {
 	res.send({ zingzap: zingzap })
 });
 
-app.listen(process.env.PORT, () => {
-	console.log(`ZingZap is running on port ${process.env.PORT}.\r\n`)
+app.listen(process.env.PORT || 8080, () => {
+	console.log(`ZingZap is running on port ${process.env.PORT || 8080}.\r\n`)
 });
