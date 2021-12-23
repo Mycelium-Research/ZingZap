@@ -1,6 +1,6 @@
 let address = '';
 let password = '';
-let amount = 0;
+let usd = 0;
 let numVolts = 0;
 
 const windowAlert = (msg, error = false) => {
@@ -26,17 +26,18 @@ document.getElementById("closeModal").addEventListener("click", () => {
 // TODO: add 'info' button for copying address and password, and 'history' button for checking the history of the last 16 blocks.
 
 document.getElementById("infoBtn").addEventListener("click", () => {
-	windowAlert(`Address: ${address}\r\nPassword: ${password}\r\nBalance: $${amount} USD`)
+	getNumVolts();
+	windowAlert(`Address: ${address}\r\nPassword: ${password}\r\nBalance: $${usd} USD`)
 })
 
 // TODO: add a way to onboard from USDC to ZingZap.
 
-const getNumVolts = address => {
+const getNumVolts = () => {
 	fetch(`${window.location.href}conductor?address=${encodeURIComponent(address)}`)
 		.then(result => result.json())
 		.then(result => {
 			numVolts = result.numVolts;
-			amount = result.amount;
+			usd = result.amount;
 			if (!result.statusMsg) {
 				return;
 			}
@@ -53,7 +54,7 @@ const genAddress = async (maxVolts, status) => {
 		for (let j = 0; j < address.byteLength; j++) output += String.fromCharCode(address[j]);
 		address = window.btoa(output);
 		if (i === maxVolts - 1 && status) {
-			getNumVolts(address);
+			getNumVolts();
 		}
 	}
 }
@@ -73,7 +74,7 @@ const logon = () => {
 			})
 			.catch(err => windowAlert(err, true))
 	} else {
-		getNumVolts(address);
+		getNumVolts();
 		fetch(`${window.location.href}logon`)
 			.then(res => res.json())
 			.then(res => {
@@ -127,6 +128,7 @@ document.getElementById("payBtn").addEventListener("click", () => {
 			document.getElementById("payBtn").disabled = false;
 			let to = document.getElementById("toInput").value;
 			let amount = document.getElementById("amountInput").value;
+			usd -= amount;
 			fetch(`${window.location.href}volt?to=${encodeURIComponent(to)}&amount=${encodeURIComponent(amount)}&hashing=${encodeURIComponent(hashing)}&address=${encodeURIComponent(address)}`)
 				.then(result => result.json())
 				.then(result => windowAlert(result.statusMsg))
