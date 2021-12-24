@@ -9,6 +9,7 @@ const NUM_ASCII = 128;
 
 module.exports = class Pulse {	
 	constructor() {
+		this.history = [];
 		this.timestamp = (new Date()).getTime();
 		this.battery = [];
 		this.station = [];
@@ -27,7 +28,7 @@ module.exports = class Pulse {
 	
 	addVolt = volt => {
 		if (volt.amount < 1 || volt.to.length !== 44 || volt.from.length !== 44) {
-			return "Volt has not been added.";
+			return;
 		}
 		this.battery.push(volt);
 		for (let j = 0; j < this.station[volt.from.charCodeAt(0)].length; j++) {
@@ -63,9 +64,18 @@ module.exports = class Pulse {
 			}
 			this.hash = createHash('sha256').update(`${this.timestamp}${this.battery}${this.station}${this.prevHash}`).digest('base64');
 			console.log(`Pulse ${this.hash} has been produced, with ${successCount} out of ${this.battery.length} volts successfully executing.\r\n`);
+			this.history.push({
+				timestamp: this.timestamp,
+				battery: this.battery,
+				prevHash: this.prevHash,
+				hash: this.hash
+			});
+			if (this.history.length > 15) {
+				this.history.shift();
+			}
 			this.newPulse();
 		}
-		return "Volt has been added successfully."
+		this.hash = createHash('sha256').update(`${this.timestamp}${this.battery}${this.station}${this.prevHash}`).digest('base64');
 	}
 	
 	accountInfo = address => {

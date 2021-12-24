@@ -4,18 +4,18 @@ let usd = 0;
 let numVolts = 0;
 
 const windowAlert = (msg, error = false) => {
-	let colour = '#f12929';
-	if (!error) {
-		colour = '#008a00';
+	if (error) {
+		document.getElementById("alertHeader").style.backgroundColor = '#f12929';
 	}
-	document.getElementById("alertHeader").style.backgroundColor = colour;
 	document.getElementById("alertMsg").textContent = msg;
 	document.getElementById("modal").style.display = 'block';
 }
 
-window.onclick = function (event) {
-	if (event.target == document.getElementById("modal")) {
+window.onclick = event => {
+	if (event.target == document.getElementById("modal") || event.target == document.getElementById("infoModal") || event.target == document.getElementById("historyModal")) {
 		document.getElementById("modal").style.display = "none";
+		document.getElementById("infoModal").style.display = "none";
+		document.getElementById("historyModal").style.display = "none";
 	}
 }
 
@@ -23,12 +23,67 @@ document.getElementById("closeModal").addEventListener("click", () => {
 	document.getElementById("modal").style.display = "none";
 });
 
+document.getElementById("closeInfoModal").addEventListener("click", () => {
+	document.getElementById("infoModal").style.display = "none";
+});
+
+document.getElementById("closeHistoryModal").addEventListener("click", () => {
+	document.getElementById("historyModal").style.display = "none";
+});
+
 // TODO: add 'info' button for copying address and password, and 'history' button for checking the history of the last 16 blocks.
 
 document.getElementById("infoBtn").addEventListener("click", () => {
 	getNumVolts();
-	windowAlert(`Address: ${address}\r\nPassword: ${password}\r\nBalance: $${usd} USD`)
-})
+	document.getElementById("infoModal").style.display = 'block';
+	document.getElementById("amountText").textContent = `Balance: $${usd} USD`;
+});
+
+document.getElementById("copyAddress").addEventListener("click", () => {
+	navigator.clipboard.writeText(address);
+	document.getElementById("copyAddress").textContent = 'Copied';
+	setTimeout(() => {
+		document.getElementById("copyAddress").textContent = 'Copy';
+	}, 1500);
+});
+
+document.getElementById("copyPassword").addEventListener("click", () => {
+	navigator.clipboard.writeText(password);
+	document.getElementById("copyPassword").textContent = 'Copied';
+	setTimeout(() => {
+		document.getElementById("copyPassword").textContent = 'Copy';
+	}, 1500);
+});
+
+document.getElementById("historyBtn").addEventListener("click", () => {
+	fetch(`${window.location.href}zingzap`)
+		.then(result => result.json())
+		.then(result => {
+			let table = document.createElement("table");
+			table.style.border = '2px solid black';
+			table.style.borderCollapse = 'collapse';
+			for (let i = 0; i < 4 + result.zingzap.battery.length; i++) {
+				table.appendChild(document.createElement("tr"));
+				table.getElementsByTagName("tr")[i].style.border = '2px solid black';
+			}
+			table.getElementsByTagName("tr")[0].textContent = `Timestamp: ${result.zingzap.timestamp}`;
+			table.getElementsByTagName("tr")[1].textContent = `Prev Hash: ${result.zingzap.prevHash}`;
+			table.getElementsByTagName("tr")[2].textContent = `Hash: ${result.zingzap.hash}`;
+			table.getElementsByTagName("tr")[3].textContent = `Battery: `;
+			for (let i = 0; i < result.zingzap.battery.length; i++) {
+				for (let j = 0; j < 5; j++) {
+					table.getElementsByTagName("tr")[4 + i].appendChild(document.createElement("td"));
+				}
+				table.getElementsByTagName("tr")[4 + i].getElementsByTagName("td")[0].textContent = `Index: ${result.zingzap.battery[i].index}`;
+				table.getElementsByTagName("tr")[4 + i].getElementsByTagName("td")[1].textContent = `From: ${result.zingzap.battery[i].from}`;
+				table.getElementsByTagName("tr")[4 + i].getElementsByTagName("td")[2].textContent = `Hash: ${result.zingzap.battery[i].hash}`;
+				table.getElementsByTagName("tr")[4 + i].getElementsByTagName("td")[3].textContent = `Amount: ${result.zingzap.battery[i].amount}`;
+				table.getElementsByTagName("tr")[4 + i].getElementsByTagName("td")[4].textContent = `Executed: ${result.zingzap.battery[i].executed}`;
+			}
+			document.getElementById("historyModal").style.display = 'block';
+			document.getElementById("history").appendChild(table);
+		})
+});
 
 // TODO: add a way to onboard from USDC to ZingZap.
 

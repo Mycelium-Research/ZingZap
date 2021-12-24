@@ -33,15 +33,23 @@ app.get('/conductor', (req, res) => {
 });
 
 app.get('/volt', (req, res) => {
-	console.log(`Conductor ${req.query.address} has proposed a volt to ${req.query.to} of amount $${req.query.amount} USD.\r\n`)
-	let statusMsg = (new Volt(zingzap, decodeURIComponent(req.query.to), parseFloat(decodeURIComponent(req.query.amount)), decodeURIComponent(req.query.hashing), decodeURIComponent(req.query.address))).addVolt(zingzap);
+	console.log(`Conductor ${req.query.address} has proposed a volt to ${req.query.to} of amount $${req.query.amount} USD.\r\n`);
+	(new Volt(zingzap, decodeURIComponent(req.query.to), parseFloat(decodeURIComponent(req.query.amount)), decodeURIComponent(req.query.hashing), decodeURIComponent(req.query.address))).addVolt(zingzap);
 	res.send({ 
-		statusMsg: "Volt has been added successfully."
+		statusMsg: "Volt has been sent."
 	});
 });
 
 app.get('/zingzap', (req, res) => {
-	res.send({ zingzap: zingzap })
+	res.send({ 
+		zingzap: {
+			timestamp: zingzap.timestamp,
+			battery: zingzap.battery,
+			history: zingzap.history,
+			prevHash: zingzap.prevHash,
+			hash: zingzap.hash
+		}
+	});
 });
 
 app.listen(process.env.PORT || 8080, () => {

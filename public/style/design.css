@@ -3,7 +3,10 @@ body {
 	background-repeat:no-repeat;
 	background-attachment:fixed;
 	font-family: 'Roboto';
+	appearance: none;
 	-webkit-appearance: none;
+	border-radius: 0;
+	-webkit-border-radius: 0;
 }
 
 #logoBtn {
@@ -75,7 +78,7 @@ body {
 	margin-top: 16px;
 }
 
-#modal {
+#modal, #infoModal, #historyModal {
 	display: none;
 	z-index: 9000;
 	width: 100%;
@@ -87,7 +90,7 @@ body {
 	background-color: rgba(0,0,0,0.6);
 }
 
-#alert, #alertHeader {
+#alert, #alertHeader, #info, #infoHeader, #history, #historyHeader {
 	width: 416px;
 	padding: 16px;
 	background-color: white;
@@ -96,23 +99,26 @@ body {
 	white-space: pre-line;
 }
 
-#alertHeader {
+#alertHeader, #infoHeader, #historyHeader {
 	height: 24px;
+	background-color: #008a00;
 }
 
-#alert {
+#alert, #info, #history {
 	margin-top: 0px;
 	min-height: 128px;
+	max-height: 256px;
+	overflow-y: auto;
 }
 
-#closeModal {
+#closeModal, #closeInfoModal, #closeHistoryModal {
 	float: right;
 	font-weight: 700;
 	color: white;
 	font-size: 24px;
 }
 
-#closeModal:hover {
+#closeModal:hover, #closeInfoModal:hover, #closeHistoryModal:hover {
 	cursor: pointer;
 }
 
