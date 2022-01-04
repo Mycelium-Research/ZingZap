@@ -31,22 +31,16 @@ module.exports = class Pulse {
 			return;
 		}
 		this.battery.push(volt);
-		for (let j = 0; j < this.station[volt.from.charCodeAt(0)].length; j++) {
-			if (this.station[volt.from.charCodeAt(0)][j].address === volt.from) {
-				this.station[volt.from.charCodeAt(0)][j].usd -= volt.amount;
-			}
-		}
 		if (this.battery.length === MAX_TRANSACTIONS || (new Date).getTime() > (this.timestamp + MAX_TIME)) {
 			let successCount = 0;
 			for (let i = 0; i < this.battery.length; i++) {
 				for (let j = 0; j < this.station[this.battery[i].from.charCodeAt(0)].length; j++) {
 					if (this.station[this.battery[i].from.charCodeAt(0)][j].address === this.battery[i].from) {
-						this.station[this.battery[i].from.charCodeAt(0)][j].usd += this.battery[i].amount;
 						let hash = this.battery[i].hash;
 						for (let k = this.battery[i].index; k > 0; k--) {
 							hash = createHash('sha256').update(hash).digest('base64');
 						}
-						if (this.station[this.battery[i].from.charCodeAt(0)][j].usd > this.battery[i].amount && hash === this.battery[i].from) {
+						if (this.station[this.battery[i].from.charCodeAt(0)][j].usd >= this.battery[i].amount && hash === this.battery[i].from) {
 							for (let k = 0; k < this.station[this.battery[i].to.charCodeAt(0)].length; k++) {
 								if (this.station[this.battery[i].to.charCodeAt(0)][k].address === this.battery[i].to) {
 									this.station[this.battery[i].from.charCodeAt(0)][j].usd -= this.battery[i].amount;
