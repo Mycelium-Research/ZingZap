@@ -101,14 +101,14 @@ const getNumVolts = () => {
 		.catch(error => windowAlert(error, true))
 }
 
-const genAddress = async (maxVolts, status) => {
+const genAddress = async maxVolts => {
 	address = document.getElementById("logonInput").value;
 	for (let i = 0; i < maxVolts; i++) {
 		address = new Uint8Array(await window.crypto.subtle.digest('SHA-256', (new TextEncoder).encode(`${address}`)));
 		output = '';
 		for (let j = 0; j < address.byteLength; j++) output += String.fromCharCode(address[j]);
 		address = window.btoa(output);
-		if (i === maxVolts - 1 && status) {
+		if (i === maxVolts - 1) {
 			getNumVolts();
 		}
 	}
@@ -125,15 +125,14 @@ const logon = () => {
 				let output = '';
 				for (let i = 0; i < hashing.byteLength; i++) output += String.fromCharCode(hashing[i]);
 				document.getElementById("logonInput").value = window.btoa(output);
-				genAddress(res.maxVolts, true);
+				genAddress(res.maxVolts);
 			})
 			.catch(err => windowAlert(err, true))
 	} else {
-		getNumVolts();
 		fetch(`${window.location.href}logon`)
 			.then(res => res.json())
 			.then(res => {
-				genAddress(res.maxVolts, false);
+				genAddress(res.maxVolts);
 				document.getElementById("logonForm").style.display = 'none';
 				document.getElementById("payForm").style.display = 'block';
 				document.getElementById("logonInput").value = '';

@@ -90,9 +90,9 @@ module.exports = class Pulse {
 			}
 		}
 		this.station[address.charCodeAt(0)].push({ 
-			address: address, 
-			usd: 300, 
-			numVolts: 0 
+			address: address,
+			usd: 300,
+			numVolts: 0
 		});
 		this.numConductors++;
 		return `Conductor has now been registered.\r\n\r\nAddress: ${address}`;
