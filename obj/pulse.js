@@ -1,15 +1,18 @@
+require('dotenv').config();
 const { createHash } = require('crypto');
 
+// Maximum number of transactions a conductor can submit before they are re-assigned
+const MAX_VOLTS_CONDUCTOR = process.env.MAX_TX_CONDUCTOR || 16384;
+
 // Maximum number of milliseconds or transactions between new blocks
-const MAX_TIME = 10000;
-const MAX_TRANSACTIONS = 100;
+const MAX_TIME = process.env.MAX_TIME || 10000;
+const MAX_TRANSACTIONS = process.env.MAX_TRANSACTIONS || 100;
 
 // Count of possible hashmap indicies
 const NUM_ASCII = 128;
 
 module.exports = class Pulse {	
 	constructor() {
-		this.history = [];
 		this.timestamp = (new Date()).getTime();
 		this.battery = [];
 		this.station = [];
@@ -27,7 +30,7 @@ module.exports = class Pulse {
 	}
 	
 	addVolt = volt => {
-		if (volt.amount < 1 || volt.to.length !== 44 || volt.from.length !== 44) {
+		if (volt.amount < 1 || volt.to.length !== 44 || volt.from.length !== 44 || (volt.index === MAX_VOLTS_CONDUCTOR - 1 && volt.to !== (process.env.HOST || 'G3tKJ/DWlLXVWEoR/dQYRwsS+1OvjR1AWKzESbyg5AE='))) {
 			return;
 		}
 		this.battery.push(volt);
@@ -58,15 +61,6 @@ module.exports = class Pulse {
 			}
 			this.hash = createHash('sha256').update(`${this.timestamp}${this.battery}${this.station}${this.prevHash}`).digest('base64');
 			console.log(`Pulse ${this.hash} has been produced, with ${successCount} out of ${this.battery.length} volts successfully executing.\r\n`);
-			this.history.push({
-				timestamp: this.timestamp,
-				battery: this.battery,
-				prevHash: this.prevHash,
-				hash: this.hash
-			});
-			if (this.history.length > 15) {
-				this.history.shift();
-			}
 			this.newPulse();
 		}
 		this.hash = createHash('sha256').update(`${this.timestamp}${this.battery}${this.station}${this.prevHash}`).digest('base64');
@@ -81,9 +75,6 @@ module.exports = class Pulse {
 	}
 	
 	addConductor = address => {
-		if (address.length !== 44) {
-			return `Conductor has failed to register as address is not of correct format.\r\n\r\nAddress: ${address}`;
-		}
 		for (let i = 0; i < this.station[address.charCodeAt(0)].length; i++) {
 			if (this.station[address.charCodeAt(0)][i].address === address) {
 				return false;

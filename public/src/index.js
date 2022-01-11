@@ -6,16 +6,17 @@ let numVolts = 0;
 const windowAlert = (msg, error = false) => {
 	if (error) {
 		document.getElementById("alertHeader").style.backgroundColor = '#f12929';
+	} else {
+		document.getElementById("alertHeader").style.backgroundColor = '#008a00';
 	}
 	document.getElementById("alertMsg").textContent = msg;
 	document.getElementById("modal").style.display = 'block';
 }
 
 window.onclick = event => {
-	if (event.target == document.getElementById("modal") || event.target == document.getElementById("infoModal") || event.target == document.getElementById("historyModal")) {
+	if (event.target == document.getElementById("modal") || event.target == document.getElementById("infoModal")) {
 		document.getElementById("modal").style.display = "none";
 		document.getElementById("infoModal").style.display = "none";
-		document.getElementById("historyModal").style.display = "none";
 	}
 }
 
@@ -25,10 +26,6 @@ document.getElementById("closeModal").addEventListener("click", () => {
 
 document.getElementById("closeInfoModal").addEventListener("click", () => {
 	document.getElementById("infoModal").style.display = "none";
-});
-
-document.getElementById("closeHistoryModal").addEventListener("click", () => {
-	document.getElementById("historyModal").style.display = "none";
 });
 
 // TODO: add 'info' button for copying address and password, and 'history' button for checking the history of the last 16 blocks.
@@ -56,45 +53,19 @@ document.getElementById("copyPassword").addEventListener("click", () => {
 });
 
 document.getElementById("historyBtn").addEventListener("click", () => {
-	fetch(`${window.location.href}zingzap`)
-		.then(result => result.json())
-		.then(result => {
-			let table = document.createElement("table");
-			table.style.border = '2px solid black';
-			table.style.borderCollapse = 'collapse';
-			for (let i = 0; i < 4 + result.zingzap.battery.length; i++) {
-				table.appendChild(document.createElement("tr"));
-				table.getElementsByTagName("tr")[i].style.border = '2px solid black';
-			}
-			table.getElementsByTagName("tr")[0].textContent = `Timestamp: ${result.zingzap.timestamp}`;
-			table.getElementsByTagName("tr")[1].textContent = `Prev Hash: ${result.zingzap.prevHash}`;
-			table.getElementsByTagName("tr")[2].textContent = `Hash: ${result.zingzap.hash}`;
-			table.getElementsByTagName("tr")[3].textContent = `Battery: `;
-			for (let i = 0; i < result.zingzap.battery.length; i++) {
-				for (let j = 0; j < 5; j++) {
-					table.getElementsByTagName("tr")[4 + i].appendChild(document.createElement("td"));
-				}
-				table.getElementsByTagName("tr")[4 + i].getElementsByTagName("td")[0].textContent = `Index: ${result.zingzap.battery[i].index}`;
-				table.getElementsByTagName("tr")[4 + i].getElementsByTagName("td")[1].textContent = `From: ${result.zingzap.battery[i].from}`;
-				table.getElementsByTagName("tr")[4 + i].getElementsByTagName("td")[2].textContent = `Hash: ${result.zingzap.battery[i].hash}`;
-				table.getElementsByTagName("tr")[4 + i].getElementsByTagName("td")[3].textContent = `Amount: ${result.zingzap.battery[i].amount}`;
-				table.getElementsByTagName("tr")[4 + i].getElementsByTagName("td")[4].textContent = `Executed: ${result.zingzap.battery[i].executed}`;
-			}
-			document.getElementById("historyModal").style.display = 'block';
-			document.getElementById("history").appendChild(table);
-		})
-});
+	window.location.href = `${window.location.href}history`;
+})
 
 // TODO: add a way to onboard from USDC to ZingZap.
 
 const getNumVolts = () => {
-	fetch(`${window.location.href}conductor?address=${encodeURIComponent(address)}`)
+	fetch(`${window.location.href}logon?address=${encodeURIComponent(address)}`)
 		.then(result => result.json())
 		.then(result => {
 			numVolts = result.numVolts;
 			usd = result.amount;
 			if (!result.statusMsg) {
-				return;
+				windowAlert("Logon has failed, possibly due to an incorrect password or address.", true);
 			}
 			windowAlert("You can now logon using the 'Logon' button. Once logged in, click the '!' button in the top-right-hand corner to copy your address and password.");
 		})
@@ -114,7 +85,7 @@ const genAddress = async maxVolts => {
 	}
 }
 
-const logon = () => {
+document.getElementById("logonForm").addEventListener("submit", () => {
 	event.preventDefault();
 	if (document.getElementById("logonInput").value.length !== 44) {
 		fetch(`${window.location.href}logon`)
@@ -142,10 +113,6 @@ const logon = () => {
 			.catch(err => windowAlert(err, true))
 	}
 	password = document.getElementById("logonInput").value;
-}
-
-document.getElementById("logonForm").addEventListener("submit", () => {
-	logon();
 });
 
 document.getElementById("payBtn").addEventListener("click", () => {
@@ -154,24 +121,6 @@ document.getElementById("payBtn").addEventListener("click", () => {
 	fetch(`${window.location.href}logon`)
 		.then(res => res.json())
 		.then(async res => {
-			if (numVolts === res.maxVolts - 1) {
-				let tempAddress = address;
-				let tempHashing = password;
-				for (let i = 0; i < (res.maxVolts - numVolts); i++) {
-					tempHashing = new Uint8Array(await window.crypto.subtle.digest('SHA-256', (new TextEncoder).encode(`${tempHashing}`)));
-					let output = '';
-					for (let j = 0; j < tempHashing.byteLength; j++) output += String.fromCharCode(tempHashing[j]);
-					tempHashing = window.btoa(output);
-				}
-				logon();
-				document.getElementById("logonInput").value = '';
-				fetch(`${window.location.href}volt?to=${encodeURIComponent(address)}&amount=${encodeURIComponent(amount)}&hashing=${encodeURIComponent(tempHashing)}&address=${encodeURIComponent(tempAddress)}`)
-					.then(result => result.json())
-					.then(result => windowAlert(result.statusMsg))
-					.catch(error => windowAlert(error, true))
-				document.getElementById("payBtn").disabled = false;
-				return;
-			}
 			let hashing = password;
 			for (let i = 0; i < (res.maxVolts - numVolts); i++) {
 				hashing = new Uint8Array(await window.crypto.subtle.digest('SHA-256', (new TextEncoder).encode(`${hashing}`)));
@@ -181,15 +130,18 @@ document.getElementById("payBtn").addEventListener("click", () => {
 			}
 			document.getElementById("payBtn").disabled = false;
 			let to = document.getElementById("toInput").value;
-			let amount = document.getElementById("amountInput").value;
-			usd -= amount;
-			fetch(`${window.location.href}volt?to=${encodeURIComponent(to)}&amount=${encodeURIComponent(amount)}&hashing=${encodeURIComponent(hashing)}&address=${encodeURIComponent(address)}`)
+			let data = document.getElementById("amountInput").value;
+			fetch(`${window.location.href}transaction?to=${encodeURIComponent(to)}&data=${encodeURIComponent(data)}&hashing=${encodeURIComponent(hashing)}&address=${encodeURIComponent(address)}`)
 				.then(result => result.json())
 				.then(result => windowAlert(result.statusMsg))
 				.catch(error => windowAlert(error, true))
+			if (numVolts === res.maxVolts - 1) {
+				windowAlert("You have reached your transaction limit for this account. All future transactions will fail unless directed to the host which will allow you to withdraw your funds.", true);
+			}
 		})
 		.catch(err => {
 			windowAlert(err, true);
 			document.getElementById("payBtn").disabled = false;
 		})
+	usd -= document.getElementById("amountInput").value;
 });
